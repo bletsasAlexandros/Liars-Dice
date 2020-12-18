@@ -1,4 +1,5 @@
 import './App.css';
+import {Chat} from './chat'
 import React, {useState, useRef, useEffect, FunctionComponent} from 'react';
 import io from "socket.io-client";
 
@@ -31,6 +32,7 @@ function App() {
       <button onClick={joinRoom}>Join Room</button>
       <input type="text" placeholder="Write Something" value={message} onChange={e=>setMessage(e.target.value)}></input>
       <button onClick={sendMessage}>Send</button>
+      <Chat />
     </div>
   );
 }
