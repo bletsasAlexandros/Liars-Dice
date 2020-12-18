@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebSockets</title>
+    <script src="/socket.io/socket.io.js"></script>
+    <link href="styles.css" rel="stylesheet">
+</head>
+<body>
+    <div id="livedies">
+        <h1>Choose a Room or Create a new One</h1>
+        <div id="room-window">
+            <input type="text" id="avatar" placeholder="Username" >
+            <input type="text" id="room-name" placeholder="Add the name of the room you want to join.">
+            <button id="sendRoom">Send</button>
+        </div>       
+            <div id="chat-window">
+                <div id="output"></div>
+                <div id="feedback"></div>
+            </div>
+            <input type="text" id="handle" placeholder="Hadle">
+            <input type="text" id="message" placeholder="Message">
+            <button id="send">Send</button>
+    </div>
+    <script src="chat.js"></script>
+    <script src="room.js"></script>
+    </body>
+</html>
