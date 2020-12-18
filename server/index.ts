@@ -1,8 +1,12 @@
-import { createSocket } from "dgram";
-
 const express = require('express');
 const app = express();
-var socket = require('socket.io');
+const http = require('http').Server(app);
+const io = require("socket.io")(http, {
+    cors: {
+      origin: "http://localhost:3000",
+      methods: ["GET", "POST"]
+    }
+  });
 const PORT = 4000;
 
 interface Data {
@@ -10,12 +14,11 @@ interface Data {
     handle?: string
   };
 
-var server = app.listen(PORT, () => console.log(`Server listening on port: ${PORT}`));
+//var server = app.listen(PORT, () => console.log(`Server listening on port: ${PORT}`));
 
 // app.use(express.static('public'));
 
 //Socket Setup
-var io = socket(server);
 io.on('connection', (socket:any)=>{
     console.log('Made Socket Connection',socket.id);
 
@@ -28,5 +31,9 @@ io.on('connection', (socket:any)=>{
             console.log(data.message);
         })
     })
+})
+
+http.listen(PORT,()=>{
+    console.log("Listening on port 4000");
 })
 
