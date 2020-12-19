@@ -15,7 +15,9 @@ function App() {
   }
 
   useEffect(()=>{
-
+    socket.on('join-room',(userInRoom:JSON)=>{
+      console.log(userInRoom);
+    })
   },[])
 
   return (

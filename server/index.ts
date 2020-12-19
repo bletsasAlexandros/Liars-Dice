@@ -14,17 +14,17 @@ interface Data {
     avatar?: string
   };
 
-//var server = app.listen(PORT, () => console.log(`Server listening on port: ${PORT}`));
-
-// app.use(express.static('public'));
+const usersInRoom = <Array<String>>[]
 
 //Socket Setup
 io.on('connection', (socket:any)=>{
     console.log('Made Socket Connection',socket.id);
 
-    socket.on('join-room',(roomData:{roomName:string, user?:string})=>{
+    socket.on('join-room',(roomData:{roomName:string, user:string})=>{
         socket.join(roomData.roomName);
-        console.log('Room '+roomData.roomName+' created');
+        console.log("User "+roomData.user+" joined the room "+roomData.roomName);
+        usersInRoom.push(roomData.user);
+        socket.to(roomData.roomName).emit(JSON.stringify(usersInRoom));
 
         socket.on('chat',(data:Data)=>{
             socket.to(roomData.roomName).emit('chat',data);
