@@ -1,35 +1,54 @@
 import React, {useState, useRef, useEffect, FunctionComponent} from 'react';
-import io from "socket.io-client";
+import {socket} from './App';
 
-const socket = io("http://localhost:4000");
+interface ChatProps {
+    avatarUser: string ;
+}
 
-export const Chat: React.FC = () =>{
+
+export const Chat: React.FC<ChatProps> = (props:any) =>{
     interface MyMessage {
         avatar: string,
         message:string
     }
 
     const [messages,setMessages] = useState<Array<MyMessage>>([]);
+    const [message,setMessage] = useState('');
+    const avatar = props.avatarUser;
+
+    const sendMessage = () =>{
+      socket.emit('chat',{avatar:avatar,message:message});
+      setMessage("");
+      setMessages(prevState=>[...prevState,
+        {
+            avatar: avatar,
+            message: message
+        }])
+    }
+
    
     useEffect(()=>{
-        console.log("rendered")
-        socket.on('chat',({message,user}:{message:string, user:string})=>{
-            setMessages([...messages,
-                {
-                avatar:user,
-                message: message
+        socket.on('chat',(data:MyMessage)=>{
+            setMessages(prevState=>[...prevState,
+            {
+                avatar: data.avatar,
+                message: data.message
             }])
-            console.log(message)
         })
     },[])
 
     return(
         <div>
-            {messages.map(messageUp=>{
-                <div>
+            <h6>Chat:</h6>
+            <input type="text" placeholder="Write Something" value={message} onChange={e=>setMessage(e.target.value)}></input>
+            <button onClick={sendMessage}>Send</button>
+            {messages.map((messageUp,index)=>{
+                return(
+                <div key={`Key_${index}`}>
                     <a>{messageUp.avatar}: {messageUp.message}</a>
                     <br />
                 </div>
+                )
             })}
         </div>
     )

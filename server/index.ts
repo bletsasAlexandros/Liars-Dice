@@ -11,7 +11,7 @@ const PORT = 4000;
 
 interface Data {
     message?: string,
-    handle?: string
+    avatar?: string
   };
 
 //var server = app.listen(PORT, () => console.log(`Server listening on port: ${PORT}`));
