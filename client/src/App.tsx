@@ -8,19 +8,15 @@ export const socket = io("http://localhost:4000");
 function App() {
   const [room,setRoom] = useState('Room');
   const [avatar, setAvatar] = useState('Alex');
+  const [players, setPlayers] = useState([]);
 
   const joinRoom = () =>{
     socket.emit('join-room',{roomName:room, user:avatar});
     setRoom("")
-    socket.on('join-room',(userInRoom:Array<String>)=>{
-      console.log("Hello");
-      console.log(userInRoom);
-    })
   }
 
   useEffect(()=>{
     socket.on('join-room',(userInRoom:Array<String>)=>{
-      console.log("Hello");
       console.log(userInRoom);
     })
   },[])
