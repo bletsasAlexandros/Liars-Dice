@@ -1,3 +1,5 @@
+import { Socket } from "dgram";
+
 const express = require('express');
 const app = express();
 const http = require('http').Server(app);
@@ -14,22 +16,25 @@ interface Data {
     avatar?: string
   };
 
-const usersInRoom = <Array<String>>[]
+const clientsOnRoom = <Array<String>>[]
 
 //Socket Setup
 io.on('connection', (socket:any)=>{
     console.log('Made Socket Connection',socket.id);
 
     socket.on('join-room',(roomData:{roomName:string, user:string})=>{
-        socket.join(roomData.roomName);
-        console.log("User "+roomData.user+" joined the room "+roomData.roomName);
-        usersInRoom.push(roomData.user);
-        socket.to(roomData.roomName).emit(JSON.stringify(usersInRoom));
+      clientsOnRoom.push(roomData.user)
+      socket.emit('join-room',clientsOnRoom)
 
-        socket.on('chat',(data:Data)=>{
-            socket.to(roomData.roomName).emit('chat',data);
-            console.log(data.message);
-        })
+      socket.join(roomData.roomName);
+      console.log("User "+roomData.user+" joined the room "+roomData.roomName);        
+
+      socket.to(roomData.roomName).emit('join-room',clientsOnRoom);
+
+      socket.on('chat',(data:Data)=>{
+        socket.to(roomData.roomName).emit('chat',data);
+        console.log(data.message);
+      })
     })
 })
 

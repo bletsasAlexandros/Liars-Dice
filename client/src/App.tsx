@@ -12,10 +12,15 @@ function App() {
   const joinRoom = () =>{
     socket.emit('join-room',{roomName:room, user:avatar});
     setRoom("")
+    socket.on('join-room',(userInRoom:Array<String>)=>{
+      console.log("Hello");
+      console.log(userInRoom);
+    })
   }
 
   useEffect(()=>{
-    socket.on('join-room',(userInRoom:JSON)=>{
+    socket.on('join-room',(userInRoom:Array<String>)=>{
+      console.log("Hello");
       console.log(userInRoom);
     })
   },[])
