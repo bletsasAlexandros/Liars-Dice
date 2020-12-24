@@ -1,0 +1,11 @@
+.board{
+    min-height: 300px;
+    width: 100%;
+    display: flex;
+}
+
+.board-player{
+    background-color: rgb(255,255,255,0.5);
+    height: 100%;
+    padding: 20px;
+}

@@ -1,12 +1,13 @@
 import React, {useState, useRef, useEffect, FunctionComponent} from 'react';
 import {socket} from './App';
+import './chat.css';
 
 interface ChatProps {
     avatarUser: string ;
 }
 
 
-export const Chat: React.FC<ChatProps> = (props:any) =>{
+export const Chat: React.FC<ChatProps> = (props:ChatProps) =>{
     interface MyMessage {
         avatar: string,
         message:string
@@ -38,7 +39,7 @@ export const Chat: React.FC<ChatProps> = (props:any) =>{
     },[])
 
     return(
-        <div>
+        <div className="main-chat">
             <h6>Chat:</h6>
             <input type="text" placeholder="Write Something" value={message} onChange={e=>setMessage(e.target.value)}></input>
             <button onClick={sendMessage}>Send</button>
