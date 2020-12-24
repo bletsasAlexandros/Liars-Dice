@@ -17,13 +17,12 @@ export const Board: React.FC<BoardProps> = (props:BoardProps)=>{
 
     useEffect(()=>{
         socket.on('ready',(data:boolean)=>{
-            
+            console.log("Everyone is ready!")
         })
     },[])
 
     return(
     <div className='board'>
-        
         {props.users.map((user,index)=>{
             return(
                 <div key={`Key_${index}`} className='board-player'>
