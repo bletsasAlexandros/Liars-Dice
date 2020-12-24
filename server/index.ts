@@ -35,6 +35,14 @@ io.on('connection', (socket:any)=>{
         socket.to(roomData.roomName).emit('chat',data);
         console.log(data.message);
       })
+
+      socket.on('disconnect',()=>{
+        const index = clientsOnRoom.indexOf(roomData.user);
+        if (index > -1) {
+          clientsOnRoom.splice(index, 1);
+        }
+        socket.to(roomData.roomName).emit('join-room', clientsOnRoom);
+      })
     })
 })
 
