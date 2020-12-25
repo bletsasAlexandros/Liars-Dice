@@ -26,7 +26,6 @@ export const Chat: React.FC<ChatProps> = (props:ChatProps) =>{
             message: message
         }])
     }
-
    
     useEffect(()=>{
         socket.on('chat',(data:MyMessage)=>{

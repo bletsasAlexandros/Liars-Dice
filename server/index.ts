@@ -1,5 +1,3 @@
-import { Socket } from "dgram";
-
 const express = require('express');
 const app = express();
 const http = require('http').Server(app);
@@ -29,6 +27,11 @@ interface Players{
   user:string
 }
 
+interface Ready{
+  state:boolean,
+  user:string
+}
+
 const clientsOnRoom = <Array<Players>>[]
 
 //Socket Setup
@@ -49,15 +52,36 @@ io.on('connection', (socket:any)=>{
 
       socket.to(roomData.roomName).emit('join-room',users);
 
+      //Game Ready Vars
+      var gameIndex:number = 0
+      var endGame:boolean = false
+
       //Game Ready
-      socket.on('ready',(data:{state:boolean, user:string})=>{
+      socket.on('ready',(data:Ready)=>{
         const index = clientsOnRoom.findIndex(client=>client.user==data.user);
         clientsOnRoom[index].state=true;
-        if (clientsOnRoom.every(client=> client.state == true)){
-          socket.to(roomData.roomName).emit('ready',true)
+        if (clientsOnRoom.every(client=> client.state == true) && clientsOnRoom.length>=2){
+          io.in(roomData.roomName).emit('ready',true)
+
+          //Turns
+          while (endGame==false){
+            socket.to(roomData.roomName).emit('turn',clientsOnRoom[gameIndex].user);
+            //Something Here with Game Data
+            //
+            //
+            if (gameIndex<clientsOnRoom.length){
+              gameIndex++;
+            }else{
+              gameIndex = 0;
+            }
+            //If only one player then stop game
+            if (clientsOnRoom.length==1){
+              endGame = true
+            }
+          }
         }
       })
-
+      
       //Chat between room users
       socket.on('chat',(data:Data)=>{
         socket.to(roomData.roomName).emit('chat',data);
