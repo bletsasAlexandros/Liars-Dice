@@ -29,7 +29,7 @@ export const Board: React.FC<BoardProps> = (props:BoardProps)=>{
                 <div key={`Key_${index}`} className='board-player'>
                     <a>{user}</a>
                     <br />
-                    {(!ready && props.avatar==user) ? <button onClick={()=>readyGame(props.avatar)}>Ready</button> : props.avatar==user ? <Choices /> : null}
+                    {(!ready && props.avatar==user) ? <button onClick={()=>readyGame(props.avatar)}>Ready</button> : props.avatar==user ? <Choices user={props.avatar}/> : null}
                 </div>
             )
         })}

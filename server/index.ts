@@ -32,6 +32,11 @@ interface Ready{
   user:string
 }
 
+interface Move{
+  choise:string,
+  user: string
+}
+
 const clientsOnRoom = <Array<Players>>[]
 
 //Socket Setup
@@ -65,14 +70,20 @@ io.on('connection', (socket:any)=>{
 
           //Turns
           while (endGame==false){
-            socket.to(roomData.roomName).emit('turn',clientsOnRoom[gameIndex].user);
+            io.in(roomData.roomName).emit('turn',clientsOnRoom[gameIndex].user);
             //Something Here with Game Data
             //
+            // socket.on('game',(data:Move)=>{
+            //   console.log('Player '+data.user+' played '+ data.choise)
+            // })
             //
-            if (gameIndex<clientsOnRoom.length){
+            console.log(gameIndex)
+            if (gameIndex<clientsOnRoom.length-1){
               gameIndex++;
             }else{
               gameIndex = 0;
+              //For Now not for final product
+              endGame=true
             }
             //If only one player then stop game
             if (clientsOnRoom.length==1){
