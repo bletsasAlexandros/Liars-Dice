@@ -68,28 +68,43 @@ io.on('connection', (socket:any)=>{
         if (clientsOnRoom.every(client=> client.state == true) && clientsOnRoom.length>=2){
           io.in(roomData.roomName).emit('ready',true)
 
+          // io.in(roomData.roomName).emit('turn',clientsOnRoom[gameIndex].user)
+          // socket.on('game',(data:Move)=>{
+          //   console.log(data)
+          //   if (gameIndex<clientsOnRoom.length){
+          //     gameIndex++;
+          //   }else{
+          //     gameIndex = 0;
+          //     //For Now not for final product
+          //     endGame=true
+          //   }
+          // })
+
+
           //Turns
-          while (endGame==false){
-            io.in(roomData.roomName).emit('turn',clientsOnRoom[gameIndex].user);
-            //Something Here with Game Data
-            //
-            // socket.on('game',(data:Move)=>{
-            //   console.log('Player '+data.user+' played '+ data.choise)
-            // })
-            //
-            console.log(gameIndex)
-            if (gameIndex<clientsOnRoom.length-1){
-              gameIndex++;
-            }else{
-              gameIndex = 0;
-              //For Now not for final product
-              endGame=true
-            }
-            //If only one player then stop game
-            if (clientsOnRoom.length==1){
-              endGame = true
-            }
-          }
+          // while (endGame==false){
+          //   io.in(roomData.roomName).emit('turn',clientsOnRoom[gameIndex].user);
+          //   setTimeout(()=>{console.log("hi")},1000);
+          //   socket.on('game')
+          //   //Something Here with Game Data
+          //   //
+          //   // socket.on('game',(data:Move)=>{
+          //   //   console.log('Player '+data.user+' played '+ data.choise)
+          //   // })
+          //   //
+          //   console.log(gameIndex)
+          //   if (gameIndex<clientsOnRoom.length-1){
+          //     gameIndex++;
+          //   }else{
+          //     gameIndex = 0;
+          //     //For Now not for final product
+          //     endGame=true
+          //   }
+          //   //If only one player then stop game
+          //   if (clientsOnRoom.length==1){
+          //     endGame = true
+          //   }
+          // }
         }
       })
       
