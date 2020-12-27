@@ -18,7 +18,11 @@ export const Board: React.FC<BoardProps> = (props:BoardProps)=>{
     }
 
     const nextTurn = () =>{
-        setIndexTurn(indexTurn + 1)
+        if (indexTurn<props.users.length-1){
+            setIndexTurn(indexTurn + 1)
+        }else if (indexTurn==props.users.length-1){
+            setIndexTurn(0)
+        }
     }
 
     useEffect(()=>{
@@ -27,9 +31,10 @@ export const Board: React.FC<BoardProps> = (props:BoardProps)=>{
             setIndexTurn(indexTurn + 1)
         })
         socket.on('next',(choise:string)=>{
-            if (indexTurn<props.avatar.length-1){
+            console.log(indexTurn)
+            if (indexTurn<props.users.length-1){
                 setIndexTurn(indexTurn + 1)
-            }else if(indexTurn==props.avatar.length-1){
+            }else if(indexTurn==props.users.length-1){
                 setIndexTurn(0)
             }
             console.log(choise)
