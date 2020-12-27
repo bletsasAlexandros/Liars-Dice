@@ -1,7 +1,7 @@
 import './App.css';
 import {Chat} from './chat'
 import {Board} from './board';
-import React, {useState, useRef, useEffect, FunctionComponent} from 'react';
+import React, {useState, useEffect} from 'react';
 import io from "socket.io-client";
 
 export const socket = io("http://localhost:4000");
@@ -9,7 +9,7 @@ export const socket = io("http://localhost:4000");
 function App() {
   const [room,setRoom] = useState('Room');
   const [avatar, setAvatar] = useState('Alex');
-  const [players, setPlayers] = useState<Array<String>>([]);
+  const [players, setPlayers] = useState<Array<string>>([]);
 
   const joinRoom = () =>{
     socket.emit('join-room',{roomName:room, user:avatar});
@@ -17,7 +17,7 @@ function App() {
   }
 
   useEffect(()=>{
-    socket.on('join-room',(userInRoom:Array<String>)=>{
+    socket.on('join-room',(userInRoom:Array<string>)=>{
       console.log(userInRoom);
       setPlayers(userInRoom);
     })

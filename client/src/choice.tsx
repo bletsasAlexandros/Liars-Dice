@@ -1,30 +1,23 @@
-import React, {useState, useRef, useEffect, FunctionComponent} from 'react';
+import React, {useState} from 'react';
 import {socket} from './App'
 
 interface ChoiseProps{
-    user: string;
+    user: string,
+    nextTurn: Function
 }
 
 export const Choices: React.FC<ChoiseProps> = (props:ChoiseProps) =>{
-    const [choise,setChoise] = useState('');
-    const [selection,setSelection] = useState(false);
+    const [choise,setChoise] = useState<string>('');
+    const [selection,setSelection] = useState<boolean>(false);
 
     const handleSubmit = () =>{
-        setSelection(false)
-        socket.emit('game',{choise:choise, user:props.user})
+        setSelection(true)
+        socket.emit('next',{choise:choise})
+        props.nextTurn();
     }
 
-    useEffect(()=>{
-        socket.on('turn',(playerTurn:string)=>{
-            console.log(playerTurn)
-            if (playerTurn==props.user){
-                setSelection(true);
-            }
-        })
-    },[])
-
     return(<div>
-        {(selection) ? (
+        {(!selection) ? (
         <div>
                 <select id="select" name="option" placeholder="Select" onChange={e=>{setChoise(e.target.value)}}>
                     <option value="one">One</option>
