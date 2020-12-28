@@ -12,14 +12,14 @@ export const Choices: React.FC<ChoiseProps> = (props:ChoiseProps) =>{
 
     const handleSubmit = () =>{
         setSelection(true)
-        socket.emit('next',{choise:choise})
+        socket.emit('next',{choise:choise, player:props.user})
         props.nextTurn();
     }
 
     return(<div>
         {(!selection) ? (
         <div>
-                <select id="select" name="option" placeholder="Select" onChange={e=>{setChoise(e.target.value)}}>
+                <select id="select" name="option" placeholder="Select" defaultValue="Select" onChange={e=>{setChoise(e.target.value)}}>
                     <option value="one">One</option>
                     <option value="two">Two</option>
                     <option value="three">Three</option>

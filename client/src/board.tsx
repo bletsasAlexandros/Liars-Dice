@@ -11,6 +11,8 @@ interface BoardProps {
 export const Board: React.FC<BoardProps> = (props:BoardProps)=>{
     const [ready,setReady] = useState<boolean>(false)
     const [indexTurn,setIndexTurn] = useState<number>(-1)
+    const [currentPlayer,setCurrentPlayer] = useState<string>()
+    const [choise,setChoise] = useState<string>('')
 
     const readyGame = (avatar:string) =>{
         setReady(true);
@@ -27,17 +29,16 @@ export const Board: React.FC<BoardProps> = (props:BoardProps)=>{
 
     useEffect(()=>{
         socket.on('turn',(readySteady:boolean)=>{
-            console.log("Everyone is Ready")
             setIndexTurn(indexTurn + 1)
         })
-        socket.on('next',(choise:string)=>{
-            console.log(indexTurn)
+        socket.on('nextPlay',(choisePlayer:{choise:string,player:string})=>{
+            setChoise(choisePlayer.choise)
+            setCurrentPlayer(choisePlayer.player)
             if (indexTurn<props.users.length-1){
                 setIndexTurn(indexTurn + 1)
             }else if(indexTurn==props.users.length-1){
                 setIndexTurn(0)
             }
-            console.log(choise)
         })
     },[indexTurn])
 
@@ -48,7 +49,8 @@ export const Board: React.FC<BoardProps> = (props:BoardProps)=>{
                 <div key={`Key_${index}`} className='board-player'>
                     <a>{user}</a>
                     <br />
-                    <a>{indexTurn}</a>
+                    <a>{(currentPlayer==user) ? choise : null}</a>
+                    <br />
                     {(!ready && props.avatar==user) ? 
                     <button onClick={()=>readyGame(props.avatar)}>Ready</button> : 
                     (props.users[indexTurn]==props.avatar && props.users[indexTurn]==user) ? 
