@@ -53,7 +53,7 @@ export const Choices: React.FC<ChoiseProps> = (props:ChoiseProps) =>{
             selectValues.map((value,index)=>{
                 if (typeof props.prevChoise!=='undefined'){
                     if (props.prevChoise?.choise==choise){
-                        selectValues.indexOf(props.prevChoise.numberDice)
+                        var availableOpt = selectValues.indexOf(props.prevChoise.numberDice)
                     }
                 }
                 return(<option value={value} key={`Key_${index}`}>{value}</option>)
