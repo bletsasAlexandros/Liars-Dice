@@ -69,11 +69,13 @@ io.on('connection', (socket:any)=>{
         }
       })
 
-
       socket.on('next',(choise:{choise:number, player:string})=>{
         socket.broadcast.to(roomData.roomName).emit('nextPlay',choise)
       })
       
+      socket.on('bluff',(bluff:any)=>{
+        console.log(bluff)
+      })
       
       //Chat between room users
       socket.on('chat',(data:Data)=>{

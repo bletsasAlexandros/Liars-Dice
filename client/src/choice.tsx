@@ -16,11 +16,17 @@ export const Choices: React.FC<ChoiseProps> = (props:ChoiseProps) =>{
     const [selection,setSelection] = useState<boolean>(false);
     const [optionsNumberOfDice,setOptionsNumberOfDice] = useState<object>()
     const [optionsDiceNumber,setOptionsDiceNumber] = useState<object>()
+    const [isBluff,setIsBluff] = useState<boolean>(false)
 
     const handleSubmit = () =>{
         setSelection(true)
         socket.emit('next',{choise:{choise:choise, numberDice:numberDice}, player:props.user})
         props.nextTurn();
+    }
+
+    const handleBluff = () =>{
+        setIsBluff(true)
+        socket.emit('bluff',"hello")
     }
 
     useEffect(()=>{
@@ -70,17 +76,18 @@ export const Choices: React.FC<ChoiseProps> = (props:ChoiseProps) =>{
     return(<div>
         {(!selection) ? (
         <div>
-                <select id="select" name="Number of Dices" placeholder="Select" defaultValue="Select" onChange={e=>{setChoise(parseInt(e.target.value))}}>
+                <select id="select" name="Number of Dices" placeholder="Select" defaultValue="Select" onChange={e=>{setChoise(parseInt(e.target.value))}} required={!isBluff}>
                     <option style={{display: "none"}}> -- Select Number -- </option>
                     {optionsNumberOfDice}
                 </select>
                 <br />
-                <select id="select" name="Dice Number" placeholder="Select" defaultValue="Select" onChange={e=>{setNumberDice(e.target.value)}}>
+                <select id="select" name="Dice Number" placeholder="Select" defaultValue="Select" onChange={e=>{setNumberDice(e.target.value)}} required={!isBluff}>
                     <option style={{display: "none"}}> -- Select Dice -- </option>
                     {optionsDiceNumber}
                 </select>
                 <br />
                 <button onClick={handleSubmit}>Submit</button>
+                <button onClick={handleBluff}>Call bluff</button>
         </div>)
         : null}
         </div>
