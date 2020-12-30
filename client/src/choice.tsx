@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {socket} from './App'
-import {gameLogic} from './gameLogic'
+import {gameLogic,selectAvailability} from './gameLogic'
 
 interface ChoiseProps{
     user: string,
@@ -26,23 +26,28 @@ export const Choices: React.FC<ChoiseProps> = (props:ChoiseProps) =>{
     useEffect(()=>{
         setOptionsNumberOfDice(
         ()=>{
-            const availableChoises = gameLogic(props.prevChoise?.choise,props.prevChoise?.numberDice)
             let rtn = []
             let bound:any = 0
-            let boundSix:any = 0
             let disable = false
+
             if (typeof props.prevChoise!=='undefined'){
-                bound = availableChoises.bound
-                boundSix = availableChoises.boundSix
+                if (props.prevChoise.numberDice!=='Six'){
+                    bound = Math.floor(props.prevChoise.choise/2) + 1
+                } else {
+                    bound = props.prevChoise.choise + 1
+                }
+                
             }
+            if (numberDice!==''){
+                const availableChoises = gameLogic(props.prevChoise?.choise,props.prevChoise?.numberDice,numberDice)
+                if (typeof props.prevChoise!=='undefined'){
+                    bound = availableChoises
+                }
+            }   
             for (var i=1; i<=20; i++){
                 disable = false
-                if (i<bound && i!=boundSix){
+                if (i<bound){
                     disable = true
-                }
-                if (numberDice===props.prevChoise?.numberDice){
-                    boundSix ++
-                    bound ++
                 }
                 rtn.push(<option value={i} key={`Key_${i}`} disabled={disable}>{i}</option>)
             }
@@ -51,15 +56,16 @@ export const Choices: React.FC<ChoiseProps> = (props:ChoiseProps) =>{
         )
         setOptionsDiceNumber(
             selectValues.map((value,index)=>{
-                if (typeof props.prevChoise!=='undefined'){
-                    if (props.prevChoise?.choise==choise){
-                        var availableOpt = selectValues.indexOf(props.prevChoise.numberDice)
+                let available:boolean = true
+                if (choise!=0){
+                    if (typeof props.prevChoise!=='undefined'){
+                        available = selectAvailability(props.prevChoise.choise, choise,props.prevChoise.numberDice,value)
                     }
                 }
-                return(<option value={value} key={`Key_${index}`}>{value}</option>)
+                return(<option value={value} disabled={!available} key={`Key_${index}`}>{value}</option>)
             })
         )
-    },[setChoise,setNumberDice])
+    },[choise,numberDice])
 
     return(<div>
         {(!selection) ? (

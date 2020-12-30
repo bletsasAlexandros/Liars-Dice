@@ -70,7 +70,7 @@ io.on('connection', (socket:any)=>{
       })
 
 
-      socket.on('next',(choise:{choise:string, player:string})=>{
+      socket.on('next',(choise:{choise:number, player:string})=>{
         socket.broadcast.to(roomData.roomName).emit('nextPlay',choise)
       })
       
