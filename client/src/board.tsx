@@ -35,10 +35,6 @@ export const Board: React.FC<BoardProps> = (props:BoardProps)=>{
     }
 
     useEffect(()=>{
-        socket.on('dices',(dices:string[])=>{
-            setDices(dices)
-            console.log(dices)
-        })
         socket.on('turn',(readySteady:boolean)=>{
             setIndexTurn(indexTurn + 1)
         })
@@ -51,10 +47,20 @@ export const Board: React.FC<BoardProps> = (props:BoardProps)=>{
                 setIndexTurn(0)
             }
         })
-        socket.on('bluff',()=>{
-            //bluff
+        
+    },[indexTurn])
+
+    useEffect(()=>{
+        socket.on('dices',(dices:string[])=>{
+            setDices(dices)
+            console.log(dices)
+            socket.on('bluff',()=>{
+                //bluff
+                console.log('bluff')
+                socket.emit('handleBluff',dices)
+            })
         })
-    },[indexTurn,dices])
+    },[])
 
     return(
     <div className='board'>

@@ -27,7 +27,8 @@ export const Choices: React.FC<ChoiseProps> = (props:ChoiseProps) =>{
     const handleBluff = () =>{
         setIsBluff(true)
         setSelection(true)
-        socket.emit('bluff',({userSelectedBluffed:props.user, prevChoises: props.prevChoise}))
+        console.log(props.prevChoise)
+        socket.emit('bluff',(props.prevChoise))
         props.nextTurn()
     }
 

@@ -40,6 +40,8 @@ interface Move{
 }
 
 const clientsOnRoom = <Array<Players>>[]
+var dataOnBluff:string[] = [] 
+var prevData:any = {}
 
 //Socket Setup
 io.on('connection', (socket:any)=>{
@@ -79,11 +81,27 @@ io.on('connection', (socket:any)=>{
         socket.broadcast.to(roomData.roomName).emit('nextPlay',choise)
       })
       
-      socket.on('bluff',(bluff:any)=>{
-        socket.to(roomData.roomName).emit('bluff',"hello")
-        
-        console.log(bluff)
+      socket.on('bluff',(bluff:{choise:number , numberDice:string })=>{
+        io.to(roomData.roomName).emit('bluff',"hello")
+        prevData[bluff.numberDice] = bluff.choise
       })
+
+        socket.on('handleBluff',(data:string[])=>{
+          data.map(x=>{
+            dataOnBluff.push(x)          })
+          if (clientsOnRoom.length==(Math.floor(dataOnBluff.length/5))){
+            let counts:any = {};
+            dataOnBluff.forEach(el => counts[el] = 1  + (counts[el] || 0))
+            console.log(counts)
+            let valueForCheck = Object.keys(prevData)[0]
+            if (prevData[valueForCheck]<=counts[valueForCheck]){
+              console.log('He is correct')
+            }else{
+              console.log('he is lost')
+            }
+          }
+          
+        })
       
       //Chat between room users
       socket.on('chat',(data:Data)=>{
