@@ -1,6 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import { socket } from './App';
 import {Choices} from './choice'
+import {Dices} from './dices'
 import './board.css'
 
 interface BoardProps {
@@ -18,6 +19,7 @@ export const Board: React.FC<BoardProps> = (props:BoardProps)=>{
     const [indexTurn,setIndexTurn] = useState<number>(-1)
     const [currentPlayer,setCurrentPlayer] = useState<string>()
     const [choise,setChoise] = useState<PreviousChoise>()
+    const [dices,setDices] = useState<Array<string>>([])
 
     const readyGame = (avatar:string) =>{
         setReady(true);
@@ -33,6 +35,10 @@ export const Board: React.FC<BoardProps> = (props:BoardProps)=>{
     }
 
     useEffect(()=>{
+        socket.on('dices',(dices:string[])=>{
+            setDices(dices)
+            console.log(dices)
+        })
         socket.on('turn',(readySteady:boolean)=>{
             setIndexTurn(indexTurn + 1)
         })
@@ -45,7 +51,10 @@ export const Board: React.FC<BoardProps> = (props:BoardProps)=>{
                 setIndexTurn(0)
             }
         })
-    },[indexTurn])
+        socket.on('bluff',()=>{
+            //bluff
+        })
+    },[indexTurn,dices])
 
     return(
     <div className='board'>
@@ -59,8 +68,12 @@ export const Board: React.FC<BoardProps> = (props:BoardProps)=>{
                     {(!ready && props.avatar==user) ? 
                     <button onClick={()=>readyGame(props.avatar)}>Ready</button> : 
                     (props.users[indexTurn]==props.avatar && props.users[indexTurn]==user) ? 
-                    <Choices user={props.avatar} nextTurn={nextTurn} prevChoise={choise}/> : 
+                    <div>
+                    <Choices user={props.avatar} nextTurn={nextTurn} prevChoise={choise}/>
+                    </div> : 
                     null}
+                    {(ready && props.avatar==user) ? 
+                    <Dices dices={dices}/> : ready ? <a>Five Dices</a> : null}
                 </div>
             )
         })}

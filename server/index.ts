@@ -9,6 +9,8 @@ const io = require("socket.io")(http, {
   });
 const PORT = 4000;
 
+const initialize = require('./serverGameLogic')
+
 interface Data {
     message?: string,
     avatar?: string
@@ -65,6 +67,10 @@ io.on('connection', (socket:any)=>{
         const index = clientsOnRoom.findIndex(client=>client.user==data.user);
         clientsOnRoom[index].state=true;
         if (clientsOnRoom.every(client=> client.state == true) && clientsOnRoom.length>=2){
+          clientsOnRoom.map(client=>{
+            let startingDices = initialize.initialize()
+            io.to(client.socket_id).emit('dices',startingDices)
+          })
           io.in(roomData.roomName).emit('turn',true)
         }
       })
@@ -74,6 +80,8 @@ io.on('connection', (socket:any)=>{
       })
       
       socket.on('bluff',(bluff:any)=>{
+        socket.to(roomData.roomName).emit('bluff',"hello")
+        
         console.log(bluff)
       })
       

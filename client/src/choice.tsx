@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {Props, useEffect, useState} from 'react';
 import {socket} from './App'
 import {gameLogic,selectAvailability} from './gameLogic'
 
@@ -26,7 +26,9 @@ export const Choices: React.FC<ChoiseProps> = (props:ChoiseProps) =>{
 
     const handleBluff = () =>{
         setIsBluff(true)
-        socket.emit('bluff',"hello")
+        setSelection(true)
+        socket.emit('bluff',({userSelectedBluffed:props.user, prevChoises: props.prevChoise}))
+        props.nextTurn()
     }
 
     useEffect(()=>{
@@ -42,7 +44,6 @@ export const Choices: React.FC<ChoiseProps> = (props:ChoiseProps) =>{
                 } else {
                     bound = props.prevChoise.choise + 1
                 }
-                
             }
             if (numberDice!==''){
                 const availableChoises = gameLogic(props.prevChoise?.choise,props.prevChoise?.numberDice,numberDice)
