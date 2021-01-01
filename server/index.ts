@@ -26,7 +26,8 @@ interface Game{
 interface Players{
   socket_id: string
   state:boolean,
-  user:string
+  user:string,
+  dices:number
 }
 
 interface Ready{
@@ -53,7 +54,7 @@ io.on('connection', (socket:any)=>{
       var users = <Array<String>>[]
 
       //Update everyone - who is online
-      clientsOnRoom.push({socket_id: socket.id, state:false, user:roomData.user})
+      clientsOnRoom.push({socket_id: socket.id, state:false, user:roomData.user, dices:5})
       users = clientsOnRoom.map(x=>x.user)
       socket.emit('join-room',users)
 
@@ -71,7 +72,7 @@ io.on('connection', (socket:any)=>{
         clientsOnRoom[index].state=true;
         if (clientsOnRoom.every(client=> client.state == true) && clientsOnRoom.length>=2){
           clientsOnRoom.map(client=>{
-            let startingDices = initialize.initialize()
+            let startingDices = initialize.initialize(client.dices)
             io.to(client.socket_id).emit('dices',startingDices)
           })
           io.in(roomData.roomName).emit('turn',true)
@@ -112,6 +113,7 @@ io.on('connection', (socket:any)=>{
               for (var i=0; i<clientsOnRoom.length;i++){
                 if (i!==playerIndex){
                   socket.to(clientsOnRoom[i].socket_id).emit('lost',1)
+                  clientsOnRoom[i].dices --
                 }else{
                   socket.to(clientsOnRoom[i].socket_id).emit('won')
                 }
@@ -124,6 +126,7 @@ io.on('connection', (socket:any)=>{
                 }else{
                   let lost = prevData[valueForCheck]+addSix-counts[valueForCheck]
                   socket.to(clientsOnRoom[i].socket_id).emit('lost',lost)
+                  clientsOnRoom[i].dices = clientsOnRoom[i].dices - lost
                 }
               }
               console.log(personPrevData+' is lost')

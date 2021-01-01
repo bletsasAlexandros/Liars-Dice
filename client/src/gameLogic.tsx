@@ -36,7 +36,7 @@ export const selectAvailability:Function = (a:number, b:number,c:string,d:string
     if (b>a){
         //all are available
         if (c==='Six'){
-            if (d=='Six'){
+            if (d==='Six'){
                 return true
             }else if (b>=2*a){
                 return true
