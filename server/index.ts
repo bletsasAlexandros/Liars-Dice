@@ -42,6 +42,7 @@ interface Move{
 const clientsOnRoom = <Array<Players>>[]
 var dataOnBluff:string[] = [] 
 var prevData:any = {}
+var personPrevData:string = ''
 
 //Socket Setup
 io.on('connection', (socket:any)=>{
@@ -84,23 +85,54 @@ io.on('connection', (socket:any)=>{
       socket.on('bluff',(bluff:{choise:number , numberDice:string })=>{
         io.to(roomData.roomName).emit('bluff',"hello")
         prevData[bluff.numberDice] = bluff.choise
+        let result = clientsOnRoom.filter(obj => {
+          return obj.socket_id===socket.id
+        })
+        let bluffedIndex = clientsOnRoom.indexOf(result[0])-1
+        personPrevData = clientsOnRoom[bluffedIndex].user
       })
 
         socket.on('handleBluff',(data:string[])=>{
           data.map(x=>{
-            dataOnBluff.push(x)          })
+            dataOnBluff.push(x)          
+          })
           if (clientsOnRoom.length==(Math.floor(dataOnBluff.length/5))){
             let counts:any = {};
             dataOnBluff.forEach(el => counts[el] = 1  + (counts[el] || 0))
-            console.log(counts)
             let valueForCheck = Object.keys(prevData)[0]
-            if (prevData[valueForCheck]<=counts[valueForCheck]){
-              console.log('He is correct')
+            let addSix:number = 0
+            if (valueForCheck!=='Six'){
+              addSix = counts['Six']
+            }
+            let result = clientsOnRoom.filter(obj => {
+              return obj.user===personPrevData
+            })
+            let playerIndex = clientsOnRoom.indexOf(result[0])
+            if (prevData[valueForCheck]<=(counts[valueForCheck]+addSix)){
+              for (var i=0; i<clientsOnRoom.length;i++){
+                if (i!==playerIndex){
+                  socket.to(clientsOnRoom[i].socket_id).emit('lost',1)
+                }else{
+                  socket.to(clientsOnRoom[i].socket_id).emit('won')
+                }
+              }
+              console.log(personPrevData+' is correct')
             }else{
-              console.log('he is lost')
+              for (var i=0; i<clientsOnRoom.length; i++){
+                if (i!==playerIndex){
+                  socket.to(clientsOnRoom[i].socket_id).emit('win')
+                }else{
+                  let lost = prevData[valueForCheck]+addSix-counts[valueForCheck]
+                  socket.to(clientsOnRoom[i].socket_id).emit('lost',lost)
+                }
+              }
+              console.log(personPrevData+' is lost')
             }
           }
-          
+          //For next
+          dataOnBluff = []
+          prevData = {}
+          personPrevData = ''
         })
       
       //Chat between room users
