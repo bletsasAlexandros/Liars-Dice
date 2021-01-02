@@ -94,10 +94,14 @@ io.on('connection', (socket:any)=>{
       })
 
         socket.on('handleBluff',(data:string[])=>{
+          
           data.map(x=>{
             dataOnBluff.push(x)          
           })
-          if (clientsOnRoom.length==(Math.floor(dataOnBluff.length/5))){
+          console.log(dataOnBluff)
+          console.log(clientsOnRoom.length)
+          console.log(Math.floor(dataOnBluff.length/5))
+          if (clientsOnRoom.length===(Math.floor(dataOnBluff.length/5))){
             let counts:any = {};
             dataOnBluff.forEach(el => counts[el] = 1  + (counts[el] || 0))
             let valueForCheck = Object.keys(prevData)[0]
@@ -109,33 +113,43 @@ io.on('connection', (socket:any)=>{
               return obj.user===personPrevData
             })
             let playerIndex = clientsOnRoom.indexOf(result[0])
+            console.log(counts)
             if (prevData[valueForCheck]<=(counts[valueForCheck]+addSix)){
               for (var i=0; i<clientsOnRoom.length;i++){
+                console.log(i)
+                console.log(clientsOnRoom[i])
                 if (i!==playerIndex){
-                  socket.to(clientsOnRoom[i].socket_id).emit('lost',1)
+                  console.log(clientsOnRoom)
+                  io.to(clientsOnRoom[i].socket_id).emit('lost',1)
                   clientsOnRoom[i].dices --
                 }else{
-                  socket.to(clientsOnRoom[i].socket_id).emit('won')
+                  io.to(clientsOnRoom[i].socket_id).emit('won','bravo')
                 }
               }
               console.log(personPrevData+' is correct')
+              //For next
+              dataOnBluff = []
+              prevData = {}
+              personPrevData = ''
+              
             }else{
               for (var i=0; i<clientsOnRoom.length; i++){
                 if (i!==playerIndex){
-                  socket.to(clientsOnRoom[i].socket_id).emit('win')
+                  io.to(clientsOnRoom[i].socket_id).emit('win','bravo')
                 }else{
                   let lost = prevData[valueForCheck]+addSix-counts[valueForCheck]
-                  socket.to(clientsOnRoom[i].socket_id).emit('lost',lost)
+                  io.to(clientsOnRoom[i].socket_id).emit('lost',lost)
                   clientsOnRoom[i].dices = clientsOnRoom[i].dices - lost
                 }
               }
               console.log(personPrevData+' is lost')
+              //For next
+              dataOnBluff = []
+              prevData = {}
+              personPrevData = ''
             }
           }
-          //For next
-          dataOnBluff = []
-          prevData = {}
-          personPrevData = ''
+          
         })
       
       //Chat between room users

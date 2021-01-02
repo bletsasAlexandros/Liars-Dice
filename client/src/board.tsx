@@ -20,6 +20,8 @@ export const Board: React.FC<BoardProps> = (props:BoardProps)=>{
     const [currentPlayer,setCurrentPlayer] = useState<string>()
     const [choise,setChoise] = useState<PreviousChoise>()
     const [dices,setDices] = useState<Array<string>>([])
+    const [status,setStatus] = useState<string>('')
+    const [round,setRound] = useState<boolean>(false)
 
     const readyGame = (avatar:string) =>{
         setReady(true);
@@ -60,6 +62,20 @@ export const Board: React.FC<BoardProps> = (props:BoardProps)=>{
                 socket.emit('handleBluff',dices)
             })
         })
+        socket.on('won',(bravo:string)=>{
+            console.log("won")
+            setStatus('won')
+            setTimeout(()=>{
+                setStatus('')
+            },4000)
+        })
+        socket.on('lost',(lostDices:number)=>{
+            console.log("lost")
+            setStatus('lost')
+            setTimeout(()=>{
+                setStatus('')
+            },4000)
+        })
     },[])
 
     return(
@@ -71,15 +87,16 @@ export const Board: React.FC<BoardProps> = (props:BoardProps)=>{
                     <br />
                     {(currentPlayer==user) ? (<div><a> Choise {choise?.choise}</a> <br /> <a>Dice {choise?.numberDice}</a></div>): null}
                     <br />
-                    {(!ready && props.avatar==user) ? 
+                    {(!ready && props.avatar==user && status==='') ? 
                     <button onClick={()=>readyGame(props.avatar)}>Ready</button> : 
-                    (props.users[indexTurn]==props.avatar && props.users[indexTurn]==user) ? 
+                    (props.users[indexTurn]==props.avatar && props.users[indexTurn]==user && status==='') ? 
                     <div>
                     <Choices user={props.avatar} nextTurn={nextTurn} prevChoise={choise}/>
                     </div> : 
                     null}
                     {(ready && props.avatar==user) ? 
                     <Dices dices={dices}/> : ready ? <a>Five Dices</a> : null}
+                    {(status!=='' && props.avatar==user) ? <a>You {status}</a> : null}
                 </div>
             )
         })}
