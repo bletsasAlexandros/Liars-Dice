@@ -16,13 +16,6 @@ interface Data {
     avatar?: string
   };
 
-interface Game{
-  user: string,
-  dices?:number
-  diceNumber?: number,
-  bluff: boolean
-}
-
 interface Players{
   socket_id: string
   state:boolean,
@@ -49,6 +42,7 @@ var personPrevData:string = ''
 io.on('connection', (socket:any)=>{
 
    console.log('Made Socket Connection',socket.id);
+
     //User Joined Room
     socket.on('join-room',(roomData:{roomName:string, user:string})=>{
       var users = <Array<String>>[]
@@ -63,8 +57,6 @@ io.on('connection', (socket:any)=>{
 
       socket.to(roomData.roomName).emit('join-room',users);
 
-      //Game Ready Vars
-      var endGame:boolean = false
 
       //Game Ready
       socket.on('ready',(data:Ready)=>{
@@ -79,10 +71,13 @@ io.on('connection', (socket:any)=>{
         }
       })
 
+
+      //Next Player
       socket.on('next',(choise:{choise:number, player:string})=>{
         socket.broadcast.to(roomData.roomName).emit('nextPlay',choise)
       })
       
+      //When someone call bluff
       socket.on('bluff',(bluff:{choise:number , numberDice:string })=>{
         io.to(roomData.roomName).emit('bluff',"hello")
         prevData[bluff.numberDice] = bluff.choise
@@ -93,8 +88,10 @@ io.on('connection', (socket:any)=>{
         personPrevData = clientsOnRoom[bluffedIndex].user
       })
 
+
+        //Handle Bluff - What to do when someone called bluff
         socket.on('handleBluff',(data:string[])=>{
-          
+          //Store all dices
           data.map(x=>{
             dataOnBluff.push(x)          
           })
@@ -131,11 +128,10 @@ io.on('connection', (socket:any)=>{
               dataOnBluff = []
               prevData = {}
               personPrevData = ''
-              
             }else{
               for (var i=0; i<clientsOnRoom.length; i++){
                 if (i!==playerIndex){
-                  io.to(clientsOnRoom[i].socket_id).emit('win','bravo')
+                  io.to(clientsOnRoom[i].socket_id).emit('won','bravo')
                 }else{
                   let lost = prevData[valueForCheck]+addSix-counts[valueForCheck]
                   io.to(clientsOnRoom[i].socket_id).emit('lost',lost)

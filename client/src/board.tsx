@@ -15,13 +15,13 @@ interface PreviousChoise{
 }
 
 export const Board: React.FC<BoardProps> = (props:BoardProps)=>{
-    const [ready,setReady] = useState<boolean>(false)
-    const [indexTurn,setIndexTurn] = useState<number>(-1)
-    const [currentPlayer,setCurrentPlayer] = useState<string>()
-    const [choise,setChoise] = useState<PreviousChoise>()
-    const [dices,setDices] = useState<Array<string>>([])
-    const [status,setStatus] = useState<string>('')
-    const [round,setRound] = useState<boolean>(false)
+    const [ready,setReady] = useState<boolean>(false) //Ready is true when everyone is ready to start the game
+    const [indexTurn,setIndexTurn] = useState<number>(-1) //Shows who is nect in line
+    const [currentPlayer,setCurrentPlayer] = useState<string>() //Whos turn is it
+    const [choise,setChoise] = useState<PreviousChoise>() //The choise the previous player have made
+    const [dices,setDices] = useState<Array<string>>([]) //Dices
+    const [status,setStatus] = useState<string>('') //Won or lost
+    const [round,setRound] = useState<boolean>(false) //End of the round is set to true and then at the beggining to false
 
     const readyGame = (avatar:string) =>{
         setReady(true);
@@ -57,7 +57,6 @@ export const Board: React.FC<BoardProps> = (props:BoardProps)=>{
             setDices(dices)
             console.log(dices)
             socket.on('bluff',()=>{
-                //bluff
                 console.log('bluff')
                 socket.emit('handleBluff',dices)
             })
@@ -65,6 +64,7 @@ export const Board: React.FC<BoardProps> = (props:BoardProps)=>{
         socket.on('won',(bravo:string)=>{
             console.log("won")
             setStatus('won')
+            setRound(true)
             setTimeout(()=>{
                 setStatus('')
             },4000)
@@ -72,6 +72,7 @@ export const Board: React.FC<BoardProps> = (props:BoardProps)=>{
         socket.on('lost',(lostDices:number)=>{
             console.log("lost")
             setStatus('lost')
+            setRound(true)
             setTimeout(()=>{
                 setStatus('')
             },4000)
@@ -85,18 +86,22 @@ export const Board: React.FC<BoardProps> = (props:BoardProps)=>{
                 <div key={`Key_${index}`} className='board-player'>
                     <a>{user}</a>
                     <br />
-                    {(currentPlayer==user) ? (<div><a> Choise {choise?.choise}</a> <br /> <a>Dice {choise?.numberDice}</a></div>): null}
+
+                    {(currentPlayer==user && !round) ? (<div><a> Choise {choise?.choise}</a> <br /> <a>Dice {choise?.numberDice}</a></div>): null}
+
                     <br />
                     {(!ready && props.avatar==user && status==='') ? 
                     <button onClick={()=>readyGame(props.avatar)}>Ready</button> : 
                     (props.users[indexTurn]==props.avatar && props.users[indexTurn]==user && status==='') ? 
                     <div>
-                    <Choices user={props.avatar} nextTurn={nextTurn} prevChoise={choise}/>
+                        <Choices user={props.avatar} nextTurn={nextTurn} prevChoise={choise}/>
                     </div> : 
                     null}
-                    {(ready && props.avatar==user) ? 
-                    <Dices dices={dices}/> : ready ? <a>Five Dices</a> : null}
-                    {(status!=='' && props.avatar==user) ? <a>You {status}</a> : null}
+
+                    {(status!=='' && props.avatar==user) ? <a>You {status}</a> : 
+                    (ready && props.avatar==user && !round) ? 
+                    <Dices dices={dices}/> : (ready && !round) ? <a>Five Dices</a> : null}
+                    
                 </div>
             )
         })}
