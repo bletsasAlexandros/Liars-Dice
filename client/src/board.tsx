@@ -67,6 +67,8 @@ export const Board: React.FC<BoardProps> = (props:BoardProps)=>{
             setRound(true)
             setTimeout(()=>{
                 setStatus('')
+                readyGame(props.avatar)
+                setRound(false)
             },4000)
         })
         socket.on('lost',(lostDices:number)=>{
@@ -75,6 +77,8 @@ export const Board: React.FC<BoardProps> = (props:BoardProps)=>{
             setRound(true)
             setTimeout(()=>{
                 setStatus('')
+                readyGame(props.avatar)
+                setRound(false)
             },4000)
         })
     },[])
