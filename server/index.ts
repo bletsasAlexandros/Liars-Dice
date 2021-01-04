@@ -85,6 +85,9 @@ io.on('connection', (socket:any)=>{
           return obj.socket_id===socket.id
         })
         let bluffedIndex = clientsOnRoom.indexOf(result[0])-1
+        if (bluffedIndex<0){
+          bluffedIndex=clientsOnRoom.length-1
+        }
         personPrevData = clientsOnRoom[bluffedIndex].user
       })
 
@@ -95,9 +98,6 @@ io.on('connection', (socket:any)=>{
           data.map(x=>{
             dataOnBluff.push(x)          
           })
-          console.log(dataOnBluff)
-          console.log(clientsOnRoom.length)
-          console.log(Math.floor(dataOnBluff.length/5))
           if (clientsOnRoom.length===(Math.floor(dataOnBluff.length/5))){
             let counts:any = {};
             dataOnBluff.forEach(el => counts[el] = 1  + (counts[el] || 0))
@@ -106,17 +106,15 @@ io.on('connection', (socket:any)=>{
             if (valueForCheck!=='Six'){
               addSix = counts['Six']
             }
+            console.log(personPrevData)
             let result = clientsOnRoom.filter(obj => {
               return obj.user===personPrevData
             })
             let playerIndex = clientsOnRoom.indexOf(result[0])
-            console.log(counts)
+            console.log('Player index is '+playerIndex)
             if (prevData[valueForCheck]<=(counts[valueForCheck]+addSix)){
               for (var i=0; i<clientsOnRoom.length;i++){
-                console.log(i)
-                console.log(clientsOnRoom[i])
                 if (i!==playerIndex){
-                  console.log(clientsOnRoom)
                   io.to(clientsOnRoom[i].socket_id).emit('lost',1)
                   clientsOnRoom[i].dices --
                 }else{
