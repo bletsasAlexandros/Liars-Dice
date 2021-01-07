@@ -39,6 +39,7 @@ export const Board: React.FC<BoardProps> = (props:BoardProps)=>{
     useEffect(()=>{
         socket.on('turn',(readySteady:boolean)=>{
             setIndexTurn(indexTurn + 1)
+            console.log("1 "+ indexTurn)
         })
         socket.on('nextPlay',(choisePlayer:{choise:PreviousChoise,player:string})=>{
             setChoise(choisePlayer.choise)
@@ -48,6 +49,7 @@ export const Board: React.FC<BoardProps> = (props:BoardProps)=>{
             }else if(indexTurn==props.users.length-1){
                 setIndexTurn(0)
             }
+            console.log("2 "+ indexTurn)
         })
         
     },[indexTurn])
@@ -61,24 +63,26 @@ export const Board: React.FC<BoardProps> = (props:BoardProps)=>{
                 socket.emit('handleBluff',dices)
             })
         })
-        socket.on('won',(bravo:string)=>{
-            console.log("won")
+        socket.on('won',(nxt:number)=>{
+            console.log("won " + nxt)
             setStatus('won')
             setRound(true)
             setTimeout(()=>{
                 setStatus('')
+                setIndexTurn(nxt)
                 readyGame(props.avatar)
                 setRound(false)
             },4000)
         })
-        socket.on('lost',(lostDices:number)=>{
-            console.log("lost")
+        socket.on('lost',(nxt:number)=>{
+            console.log("lost "+nxt)
             setStatus('lost')
             setRound(true)
             setTimeout(()=>{
                 setStatus('')
-                readyGame(props.avatar)
+                setIndexTurn(nxt)
                 setRound(false)
+                readyGame(props.avatar)
             },4000)
         })
     },[])

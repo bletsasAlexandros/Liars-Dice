@@ -73,7 +73,7 @@ io.on('connection', (socket:any)=>{
 
 
       //Next Player
-      socket.on('next',(choise:{choise:number, player:string})=>{
+      socket.on('next',(choise?:{choise:number, player:string})=>{
         socket.broadcast.to(roomData.roomName).emit('nextPlay',choise)
       })
       
@@ -115,10 +115,10 @@ io.on('connection', (socket:any)=>{
             if (prevData[valueForCheck]<=(counts[valueForCheck]+addSix)){
               for (var i=0; i<clientsOnRoom.length;i++){
                 if (i!==playerIndex){
-                  io.to(clientsOnRoom[i].socket_id).emit('lost',1)
+                  io.to(clientsOnRoom[i].socket_id).emit('lost',playerIndex)
                   clientsOnRoom[i].dices --
                 }else{
-                  io.to(clientsOnRoom[i].socket_id).emit('won','bravo')
+                  io.to(clientsOnRoom[i].socket_id).emit('won',playerIndex)
                 }
               }
               console.log(personPrevData+' is correct')
@@ -129,10 +129,10 @@ io.on('connection', (socket:any)=>{
             }else{
               for (var i=0; i<clientsOnRoom.length; i++){
                 if (i!==playerIndex){
-                  io.to(clientsOnRoom[i].socket_id).emit('won','bravo')
+                  io.to(clientsOnRoom[i].socket_id).emit('won',playerIndex)
                 }else{
                   let lost = prevData[valueForCheck]+addSix-counts[valueForCheck]
-                  io.to(clientsOnRoom[i].socket_id).emit('lost',lost)
+                  io.to(clientsOnRoom[i].socket_id).emit('lost',playerIndex)
                   clientsOnRoom[i].dices = clientsOnRoom[i].dices - lost
                 }
               }

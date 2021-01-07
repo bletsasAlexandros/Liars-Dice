@@ -29,8 +29,8 @@ function App() {
       <input type="text" placeholder="Username" value={avatar} onChange={e=>setAvatar(e.target.value)}></input>
       <input type="text" placeholder="Room" value={room} onChange={e=>setRoom(e.target.value)}></input>
       <button onClick={joinRoom}>Join Room</button>
-      <Chat avatarUser={avatar}/>
       <Board users={players} avatar={avatar}/>
+      <Chat avatarUser={avatar}/>
     </div>
   );
 }
