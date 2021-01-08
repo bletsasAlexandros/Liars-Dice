@@ -36,6 +36,7 @@ export const Board: React.FC<BoardProps> = (props:BoardProps)=>{
         }
     }
 
+
     useEffect(()=>{
         socket.on('turn',(readySteady:boolean)=>{
             setIndexTurn(indexTurn + 1)
@@ -69,10 +70,9 @@ export const Board: React.FC<BoardProps> = (props:BoardProps)=>{
             setRound(true)
             setTimeout(()=>{
                 setStatus('')
-                setIndexTurn(nxt)
-                readyGame(props.avatar)
                 setRound(false)
             },4000)
+            socket.emit('next-round',props.avatar)
         })
         socket.on('lost',(nxt:number)=>{
             console.log("lost "+nxt)
@@ -80,10 +80,13 @@ export const Board: React.FC<BoardProps> = (props:BoardProps)=>{
             setRound(true)
             setTimeout(()=>{
                 setStatus('')
-                setIndexTurn(nxt)
                 setRound(false)
-                readyGame(props.avatar)
             },4000)
+            socket.emit('next-round',props.avatar)
+        })
+        socket.on('next-round-ready',(data:{dices:string[],index:number})=>{
+            setIndexTurn(data.index)
+            setDices(data.dices)
         })
     },[])
 

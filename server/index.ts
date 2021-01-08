@@ -71,6 +71,21 @@ io.on('connection', (socket:any)=>{
         }
       })
 
+      //Ending-round Statring New-Round
+      socket.on('next-round',(player:string)=>{
+        console.log(personPrevData);
+        const currentIndex = clientsOnRoom.findIndex(client=>client.user==player)
+        clientsOnRoom[currentIndex].state=true
+        if (clientsOnRoom.every(client=>client.state == true)){
+          //Next round var defaults
+          clientsOnRoom.map(client=>{
+            const index = 0
+            let startingDice = initialize.initialize(client.dices)
+            io.to(client.socket_id).emit('next-round-ready',{dices:startingDice,nextPlayer:index})
+          })
+        }
+      })
+
 
       //Next Player
       socket.on('next',(choise?:{choise:number, player:string})=>{
@@ -94,6 +109,7 @@ io.on('connection', (socket:any)=>{
 
         //Handle Bluff - What to do when someone called bluff
         socket.on('handleBluff',(data:string[])=>{
+          console.log("hello")
           //Store all dices
           data.map(x=>{
             dataOnBluff.push(x)          
@@ -123,9 +139,7 @@ io.on('connection', (socket:any)=>{
               }
               console.log(personPrevData+' is correct')
               //For next
-              dataOnBluff = []
-              prevData = {}
-              personPrevData = ''
+              clientsOnRoom.every(client=>{client.state=false})
             }else{
               for (var i=0; i<clientsOnRoom.length; i++){
                 if (i!==playerIndex){
@@ -138,12 +152,10 @@ io.on('connection', (socket:any)=>{
               }
               console.log(personPrevData+' is lost')
               //For next
-              dataOnBluff = []
-              prevData = {}
-              personPrevData = ''
+              clientsOnRoom.every(client=>{client.state=false})
             }
+            
           }
-          
         })
       
       //Chat between room users
