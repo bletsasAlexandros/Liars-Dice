@@ -40,7 +40,6 @@ export const Board: React.FC<BoardProps> = (props:BoardProps)=>{
     useEffect(()=>{
         socket.on('turn',(readySteady:boolean)=>{
             setIndexTurn(indexTurn + 1)
-            console.log("1 "+ indexTurn)
         })
         socket.on('nextPlay',(choisePlayer:{choise:PreviousChoise,player:string})=>{
             setChoise(choisePlayer.choise)
@@ -50,7 +49,6 @@ export const Board: React.FC<BoardProps> = (props:BoardProps)=>{
             }else if(indexTurn==props.users.length-1){
                 setIndexTurn(0)
             }
-            console.log("2 "+ indexTurn)
         })
         
     },[indexTurn])
@@ -58,35 +56,32 @@ export const Board: React.FC<BoardProps> = (props:BoardProps)=>{
     useEffect(()=>{
         socket.on('dices',(dices:string[])=>{
             setDices(dices)
-            console.log(dices)
             socket.on('bluff',()=>{
                 console.log('bluff')
                 socket.emit('handleBluff',dices)
             })
         })
         socket.on('won',(nxt:number)=>{
-            console.log("won " + nxt)
             setStatus('won')
             setRound(true)
             setTimeout(()=>{
                 setStatus('')
-                setRound(false)
+                socket.emit('next-round',props.avatar)
             },4000)
-            socket.emit('next-round',props.avatar)
+            
         })
         socket.on('lost',(nxt:number)=>{
-            console.log("lost "+nxt)
             setStatus('lost')
             setRound(true)
             setTimeout(()=>{
                 setStatus('')
-                setRound(false)
+                socket.emit('next-round',props.avatar)
             },4000)
-            socket.emit('next-round',props.avatar)
         })
-        socket.on('next-round-ready',(data:{dices:string[],index:number})=>{
-            setIndexTurn(data.index)
+        socket.on('next-round-ready',(data:{dices:string[],nextPlayer:number})=>{
             setDices(data.dices)
+            setIndexTurn(data.nextPlayer)
+            setRound(false)
         })
     },[])
 
@@ -110,7 +105,7 @@ export const Board: React.FC<BoardProps> = (props:BoardProps)=>{
                     null}
 
                     {(status!=='' && props.avatar==user) ? <a>You {status}</a> : 
-                    (ready && props.avatar==user && !round) ? 
+                    (ready && props.avatar==user && !round ) ? 
                     <Dices dices={dices}/> : (ready && !round) ? <a>Five Dices</a> : null}
                     
                 </div>

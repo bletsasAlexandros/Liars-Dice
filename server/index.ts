@@ -37,6 +37,7 @@ const clientsOnRoom = <Array<Players>>[]
 var dataOnBluff:string[] = [] 
 var prevData:any = {}
 var personPrevData:string = ''
+var nextRoundPlayer:number = 0
 
 //Socket Setup
 io.on('connection', (socket:any)=>{
@@ -73,15 +74,13 @@ io.on('connection', (socket:any)=>{
 
       //Ending-round Statring New-Round
       socket.on('next-round',(player:string)=>{
-        console.log(personPrevData);
         const currentIndex = clientsOnRoom.findIndex(client=>client.user==player)
         clientsOnRoom[currentIndex].state=true
         if (clientsOnRoom.every(client=>client.state == true)){
           //Next round var defaults
           clientsOnRoom.map(client=>{
-            const index = 0
             let startingDice = initialize.initialize(client.dices)
-            io.to(client.socket_id).emit('next-round-ready',{dices:startingDice,nextPlayer:index})
+            io.to(client.socket_id).emit('next-round-ready',{data:{dices:startingDice,nextPlayer:nextRoundPlayer}})
           })
         }
       })
@@ -137,7 +136,12 @@ io.on('connection', (socket:any)=>{
                   io.to(clientsOnRoom[i].socket_id).emit('won',playerIndex)
                 }
               }
+              nextRoundPlayer = playerIndex
               console.log(personPrevData+' is correct')
+              
+              dataOnBluff = []
+              prevData = {}
+              personPrevData = ''
               //For next
               clientsOnRoom.every(client=>{client.state=false})
             }else{
@@ -150,7 +154,16 @@ io.on('connection', (socket:any)=>{
                   clientsOnRoom[i].dices = clientsOnRoom[i].dices - lost
                 }
               }
+              if (playerIndex < clientsOnRoom.length-1){
+                nextRoundPlayer = playerIndex + 1
+              }else{
+                nextRoundPlayer = 0
+              }
               console.log(personPrevData+' is lost')
+              
+                dataOnBluff = []
+                prevData = {}
+                personPrevData = ''
               //For next
               clientsOnRoom.every(client=>{client.state=false})
             }
