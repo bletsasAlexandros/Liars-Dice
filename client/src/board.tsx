@@ -2,6 +2,7 @@ import React, {useState, useEffect} from 'react';
 import { socket } from './App';
 import {Choices} from './choice'
 import {Dices} from './dices'
+import {initialiazeDices} from './initializeRandomDice'
 import './board.css'
 
 interface BoardProps {
@@ -78,8 +79,12 @@ export const Board: React.FC<BoardProps> = (props:BoardProps)=>{
                 socket.emit('next-round',props.avatar)
             },4000)
         })
-        socket.on('next-round-ready',(data:{dices:string[],nextPlayer:number})=>{
-            setDices(data.dices)
+        socket.on('next-round-ready',(data:{clientDices:number,nextPlayer:number})=>{
+            console.log(data)
+            console.log(data.clientDices)
+            var dic = initialiazeDices(data.clientDices)
+            console.log(dic)
+            setDices(dic)
             setIndexTurn(data.nextPlayer)
             setRound(false)
         })

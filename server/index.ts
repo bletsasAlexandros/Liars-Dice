@@ -79,8 +79,8 @@ io.on('connection', (socket:any)=>{
         if (clientsOnRoom.every(client=>client.state == true)){
           //Next round var defaults
           clientsOnRoom.map(client=>{
-            let startingDice = initialize.initialize(client.dices)
-            io.to(client.socket_id).emit('next-round-ready',{data:{dices:startingDice,nextPlayer:nextRoundPlayer}})
+            console.log(client.user)
+            io.to(client.socket_id).emit('next-round-ready',{clientDices:client.dices,nextPlayer:nextRoundPlayer})
           })
         }
       })
