@@ -37,6 +37,8 @@ export const Board: React.FC<BoardProps> = (props:BoardProps)=>{
         }
     }
 
+    const disactivateUser()
+
 
     useEffect(()=>{
         socket.on('turn',(readySteady:boolean)=>{
@@ -51,14 +53,15 @@ export const Board: React.FC<BoardProps> = (props:BoardProps)=>{
                 setIndexTurn(0)
             }
         })
-        
+        if (dices.length==0){
+            //disactivate
+        }
     },[indexTurn])
 
     useEffect(()=>{
         socket.on('dices',(dices:string[])=>{
             setDices(dices)
             socket.on('bluff',()=>{
-                console.log('bluff')
                 socket.emit('handleBluff',dices)
             })
         })
@@ -80,10 +83,7 @@ export const Board: React.FC<BoardProps> = (props:BoardProps)=>{
             },4000)
         })
         socket.on('next-round-ready',(data:{clientDices:number,nextPlayer:number})=>{
-            console.log(data)
-            console.log(data.clientDices)
             var dic = initialiazeDices(data.clientDices)
-            console.log(dic)
             setDices(dic)
             setIndexTurn(data.nextPlayer)
             setRound(false)

@@ -79,7 +79,6 @@ io.on('connection', (socket:any)=>{
         if (clientsOnRoom.every(client=>client.state == true)){
           //Next round var defaults
           clientsOnRoom.map(client=>{
-            console.log(client.user)
             io.to(client.socket_id).emit('next-round-ready',{clientDices:client.dices,nextPlayer:nextRoundPlayer})
           })
         }
@@ -108,7 +107,6 @@ io.on('connection', (socket:any)=>{
 
         //Handle Bluff - What to do when someone called bluff
         socket.on('handleBluff',(data:string[])=>{
-          console.log("hello")
           //Store all dices
           data.map(x=>{
             dataOnBluff.push(x)          
@@ -121,23 +119,24 @@ io.on('connection', (socket:any)=>{
             if (valueForCheck!=='Six'){
               addSix = counts['Six']
             }
-            console.log(personPrevData)
             let result = clientsOnRoom.filter(obj => {
               return obj.user===personPrevData
             })
             let playerIndex = clientsOnRoom.indexOf(result[0])
-            console.log('Player index is '+playerIndex)
             if (prevData[valueForCheck]<=(counts[valueForCheck]+addSix)){
               for (var i=0; i<clientsOnRoom.length;i++){
                 if (i!==playerIndex){
                   io.to(clientsOnRoom[i].socket_id).emit('lost',playerIndex)
                   clientsOnRoom[i].dices --
+                  if (clientsOnRoom[i].dices <= 0){
+                    clientsOnRoom.splice(i,1)
+                    console.log(clientsOnRoom)
+                  }
                 }else{
                   io.to(clientsOnRoom[i].socket_id).emit('won',playerIndex)
                 }
               }
               nextRoundPlayer = playerIndex
-              console.log(personPrevData+' is correct')
               
               dataOnBluff = []
               prevData = {}
@@ -152,6 +151,11 @@ io.on('connection', (socket:any)=>{
                   let lost = prevData[valueForCheck]+addSix-counts[valueForCheck]
                   io.to(clientsOnRoom[i].socket_id).emit('lost',playerIndex)
                   clientsOnRoom[i].dices = clientsOnRoom[i].dices - lost
+                  console.log("hello")
+                  if (clientsOnRoom[i].dices <= 0){
+                    clientsOnRoom.splice(i,1)
+                    console.log(clientsOnRoom)
+                  }
                 }
               }
               if (playerIndex < clientsOnRoom.length-1){
@@ -159,7 +163,6 @@ io.on('connection', (socket:any)=>{
               }else{
                 nextRoundPlayer = 0
               }
-              console.log(personPrevData+' is lost')
               
                 dataOnBluff = []
                 prevData = {}
